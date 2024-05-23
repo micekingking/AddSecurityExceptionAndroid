@@ -31,9 +31,12 @@ Make the new APK also debuggable
 
 Path to signing key (default *~/.android/debug.keystore*)
 
-`-s`, `--ks-key-alias` `<alias>` (**optional**) 
+`-a`, `--ks-key-alias` `<alias>` (**optional**) 
 
-Path to signing key (default *androiddebugkey*)
+alias with signing key (default *androiddebugkey*)
+
+`-s`, `--ks-pass pass:``<ks>` (**optional**) 
+password with signing key (default *android*)
 
 `-b`, `--build-tools` `<sdk-path>` (**optional**) 
 
@@ -57,6 +60,6 @@ Specifying build-tools and keystore:
 
 Specifying keystore and alias:
 ```
-./addSecurityExceptions.sh -d -k ~/.android/debug.keystore myApp.apk -s androiddebugkey
+./addSecurityExceptions.sh -d -k ~/.android/debug.keystore myApp.apk -a androiddebugkey -s keystorePassword
 
 ```
