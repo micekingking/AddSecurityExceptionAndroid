@@ -4,7 +4,7 @@ usage(){
     echo ""
     echo "No arguments supplied"
     echo ""
-    echo "Usage: $0 [-d] [-b <build-tools>] [-k <keystore> [-s <alias>]] <apkfile>"
+    echo "Usage: $0 [-d] [-b <build-tools>] [-k <keystore> [-a <alias>]] [-s <keystorePwd>]] <apkfile>"
     echo ""
     echo "Options:"
     echo ""
@@ -14,8 +14,11 @@ usage(){
     echo "  -k,  --key-store <keystore>"
     echo "       Path to signing keystore file (default: '~/.android/debug.keystore')"
     echo ""
-    echo "  -s,  --ks-key-alias <alias>"
+    echo "  -a,  --ks-key-alias <alias>"
     echo "       Alias of signing key (default: 'androiddebugkey')"
+    echo ""
+    echo "  -s,  --ks-pass pass:<ks>"
+    echo "       password of signing key (default: 'android')"
     echo ""
     echo "  -b,  --build-tools <build-tools>"
     echo "       Set custom Android build tools path (default: '~/Library/Android/sdk/build-tools/')"
@@ -46,8 +49,12 @@ while [[ $# -gt 0 ]]; do
       debugKeystore="$2"
       shift 2
       ;;
-    -s | --ks-key-alias)
+    -a | --ks-key-alias)
       debugKeyAlias="$2"
+      shift 2
+      ;;
+    -s | --ks-pass)
+      debugKeyPwd="$2"
       shift 2
       ;;
     -b | --build-tools)
@@ -88,6 +95,7 @@ BUILD_TOOLS_DIR=${arr_storted[${#arr_storted[@]}-1]}
 
 # set default key-alias, if not passed as param
 debugKeyAlias="${debugKeyAlias:=androiddebugkey}"
+debugKeyPwd="${debugKeyPwd:=android}"
 
 if [ ! $debugKeystore ]; then
   debugKeystore=~/.android/debug.keystore
@@ -144,8 +152,9 @@ java -jar "$DIR/apktool.jar" --use-aapt2 b -o "./$tempFileName" "$tmpDir"
 echo "Running Zip Align on $tempFileName and creating $newFileName"
 $BUILD_TOOLS_DIR/zipalign -p 4 $tempFileName $newFileName
 
-echo "Signing temp file $newFileName with $debugKeyAlias"
-$BUILD_TOOLS_DIR/apksigner sign --ks $debugKeystore --ks-key-alias $debugKeyAlias --ks-pass pass:android "./$newFileName"
+echo "Signing temp file $newFileName with alias=$debugKeyAlias" and password=XXXX
+# $BUILD_TOOLS_DIR/apksigner sign --ks $debugKeystore --ks-key-alias $debugKeyAlias --ks-pass pass:android "./$newFileName"
+$BUILD_TOOLS_DIR/apksigner sign --ks $debugKeystore --ks-key-alias $debugKeyAlias --ks-pass pass:$debugKeyPwd "./$newFileName"
 
 rm -rf $tempFileName
 echo "Resigned APK successfully $newFileName"
